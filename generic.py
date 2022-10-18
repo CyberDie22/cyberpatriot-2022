@@ -5,7 +5,7 @@ def run(command):
 
 uname = platform.uname()
 
-if "Ubuntu" in uname.version:
+if "Ubuntu" in uname.version or "Debian" in uname.version:
     if os.geteuid() != 0:
         print("This script requires root privliges!")
         exit(-1)
@@ -36,7 +36,9 @@ if "Ubuntu" in uname.version:
             users.append(user.pw_name)
 
     print("Enter '$DONE$' to stop input")
-    print("Enter all allowed administrators")
+    print("Enter all allowed administrators, enter you're name first")
+    first = True
+    useracc = ""
     while True:
         name = input("Admin Name: ")
         if name == '$DONE$':
@@ -48,6 +50,9 @@ if "Ubuntu" in uname.version:
         else:
             if not name in sudo.gr_mem:
                 os.system("adduser " + name + " sudo")
+        if first:
+            useracc = name
+            first = False
 
     for admin in sudo.gr_mem:
         if not admin in allowed_users:
@@ -66,7 +71,10 @@ if "Ubuntu" in uname.version:
     for user in users:
         if not user in allowed_users:
             os.system("deluser " + user)
-    
+
+    for user in allowed_users:
+        if user == useracc: continue
+        os.system("passwd " + user)
 
 elif "Darwin" in uname.version:
     print("Darwin not supported!")
