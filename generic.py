@@ -81,5 +81,5 @@ elif "Darwin" in uname.version:
     exit(-1)
 
 else:
-    print("I don't recognise this OS")
+    print("I don't recognize this OS")
     print(uname)
