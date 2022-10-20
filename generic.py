@@ -79,3 +79,7 @@ if "Ubuntu" in uname.version or "Debian" in uname.version:
 elif "Darwin" in uname.version:
     print("Darwin not supported!")
     exit(-1)
+
+else:
+    print("I don't recognise this OS")
+    print(uname)
