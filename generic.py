@@ -76,6 +76,12 @@ if "Ubuntu" in uname.version or "Debian" in uname.version:
         if user == useracc: continue
         os.system("passwd " + user)
 
+    os.system("apt install libopenscap8")
+    os.system("wget https://people.canonical.com/~ubuntu-security/oval/com.ubuntu.xenial.cve.oval.xml")
+    os.system("oscap oval eval --results oscap_results.xml --report oscap_report.html com.ubuntu.xenial.cve.oval.xml")
+
+    os.system("firefox oscap_report.html &")
+
 elif "Darwin" in uname.version:
     print("Darwin not supported!")
     exit(-1)
