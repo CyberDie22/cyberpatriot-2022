@@ -7,5 +7,5 @@ uname = platform.uname()
 
 if uname.system == 'Linux':
     if "Ubuntu" in uname.version:
-        lsb_release = run('lsb_release -r').split(':').strip()
+        lsb_release = run('lsb_release -r').split(':')[2].strip()
         print(lsb_release)
