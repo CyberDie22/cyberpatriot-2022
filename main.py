@@ -6,6 +6,6 @@ def run(command):
 uname = platform.uname()
 
 if uname.system == 'Linux':
-    if "Ubuntu" in system.version:
+    if "Ubuntu" in uname.version:
         lsb_release = run('lsb_release -r').split(':').strip()
         print(lsb_release)
