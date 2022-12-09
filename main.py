@@ -1,4 +1,5 @@
-import subprocess, platform, os, tqdm
+import subprocess, platform, os
+from tqdm import tqdm
 
 def run(command):
     out = subprocess.getoutput(command)
