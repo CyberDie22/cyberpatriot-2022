@@ -28,10 +28,10 @@ if "Ubuntu" in uname.version:
             run('systemctl start ' + service)
         print("Running on Ubuntu Linux 22.04")
 
-        # print("\nUpdate System...")
-        # run('apt update -y')
-        # run('apt upgrade -y')
-        # print("\nDone updating system")
+        print("\nUpdate System...")
+        run('apt update -y')
+        run('apt upgrade -y')
+        print("\nDone updating system")
 
         print("\nAudit Users...")
         UID_MIN = int(run("awk '/^UID_MIN/ {print $2}' /etc/login.defs"))
