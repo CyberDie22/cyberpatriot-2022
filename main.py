@@ -1,7 +1,9 @@
 import subprocess, platform, os
 
 def run(command):
-    return subprocess.getoutput(command)
+    out = subprocess.getoutput(command)
+    print(out)
+    return out
 
 uname = platform.uname()
 
