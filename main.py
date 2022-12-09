@@ -80,7 +80,8 @@ if "Ubuntu" in uname.version:
         print("Finished user audit")
 
         print("Updating passwords...")
-        for user in all_allowed_users + "root":
+        all_allowed_users.append("root")
+        for user in all_allowed_users:
             if user == ME: continue
 
             while True:
@@ -89,6 +90,7 @@ if "Ubuntu" in uname.version:
                 output = run('passwd ' + user)
                 if 'passwd: password unchanged' not in output:
                     break
+        all_allowed_users.pop()
         print("Done updating passwords")
 
         print("Enable firewall...")
