@@ -2,8 +2,10 @@ import subprocess, platform, os
 from tqdm import tqdm
 
 def run(command):
-    out = subprocess.getoutput(command)
-    # print(out)
+    return subprocess.getoutput(command)
+def run_print(command):
+    out = run(command)
+    print(out)
     return out
 
 uname = platform.uname()
@@ -18,8 +20,10 @@ if "Ubuntu" in uname.version:
     lsb_release = run('lsb_release -r').split(':')[1].strip()
     if lsb_release == "22.04":
         def install_packages(packages):
+            print("Installing " + packages)
             run('apt update -y')
             run('apt install -y ' + packages)
+            print("Finished installing " + packages)
         def start_service(service):
             run('systemctl start ' + service)
         print("Running on Ubuntu Linux 22.04")
@@ -136,20 +140,22 @@ if "Ubuntu" in uname.version:
         # LAST
         print("Run clamav")
         install_packages("clamav libclamunrar9")
-        run("clamscan --recursive /")
-        run("clamscan --memory")
+        run_print("clamscan --recursive /")
+        run_print("clamscan --memory")
         print("Finished clamav")
 
         # LAST
         print("Run openscap script")
-        run("bash ./ubuntu2204-script-cis_level2_workstation.sh")
-        run("bash ./firefox-script-stig.sh")
+        run_print("bash ./ubuntu2204-script-cis_level2_workstation.sh")
+        run_print("bash ./firefox-script-stig.sh")
         print("Finished running openscap scripts")
 
     elif lsb_release == "20.04":
         def install_packages(packages):
+            print("Installing " + packages)
             run('apt update -y')
             run('apt install -y ' + packages)
+            print("Finished installing " + packages)
         def start_service(service):
             run('systemctl start ' + service)
         print("Running on Ubuntu Linux 20.04")
@@ -266,14 +272,14 @@ if "Ubuntu" in uname.version:
         # LAST
         print("Run clamav")
         install_packages("clamav libclamunrar9")
-        run("clamscan --recursive /")
-        run("clamscan --memory")
+        run_print("clamscan --recursive /")
+        run_print("clamscan --memory")
         print("Finished clamav")
 
         # LAST
         print("Run openscap script")
-        run("bash ./ubuntu2004-script-cis_level2_workstation.sh")
-        run("bash ./firefox-script-stig.sh")
+        run_print("bash ./ubuntu2004-script-cis_level2_workstation.sh")
+        run_print("bash ./firefox-script-stig.sh")
         print("Finished running openscap scripts")
 else:
     print("Your system is not supported!")
