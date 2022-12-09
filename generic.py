@@ -17,9 +17,6 @@ if "Ubuntu" in uname.version or "Debian" in uname.version:
 
     # install openscap dependencies
 
-    os.system("apt install libopenscap8 -y")
-    os.system("wget https://people.canonical.com/~ubuntu-security/oval/com.ubuntu.xenial.cve.oval.xml")
-
     # install unattended upgrades
 
     os.system("apt install unattended-upgrades -y")
