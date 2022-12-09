@@ -1,4 +1,4 @@
-import subprocess, platform, os
+import subprocess, platform, os, tqdm
 
 def run(command):
     out = subprocess.getoutput(command)
@@ -99,7 +99,7 @@ if "Ubuntu" in uname.version:
 
         print("Blocking non-essential ports...")
         ports_to_block = "20, 21, 23, 69, 135, 411, 412, 1080, 1194, 2302, 2745, 3074, 3124, 3127, 3128, 8080, 3306, 3724, 3784, 3785, 4333, 4444, 4664, 5004, 5005, 5500, 5554, 5800, 5900, 6112, 6500, 6699, 6881, 6882, 6883, 6884, 6885, 6886, 6887, 6888, 6889, 6890, 6891, 6892, 6893, 6894, 6895, 6896, 6897, 6898, 6999, 8767, 8866, 9898, 9988, 12035, 12036, 12345, 14567, 27015, 27374, 28960, 31337, 33434".split(", ")
-        for port in ports_to_block:
+        for port in tqdm(ports_to_block, desc="ports"):
             run('ufw deny ' + port)
         print("Done blocking non-essential ports, you should reenable needed ports!")
 
@@ -210,7 +210,8 @@ if "Ubuntu" in uname.version:
         print("Finished user audit")
 
         print("Updating passwords...")
-        for user in all_allowed_users + "root":
+        all_allowed_users.append("root")
+        for user in all_allowed_users:
             if user == ME: continue
 
             while True:
@@ -219,6 +220,7 @@ if "Ubuntu" in uname.version:
                 output = run('passwd ' + user)
                 if 'passwd: password unchanged' not in output:
                     break
+        all_allowed_users.pop()
         print("Done updating passwords")
 
         print("Enable firewall...")
@@ -227,7 +229,7 @@ if "Ubuntu" in uname.version:
 
         print("Blocking non-essential ports...")
         ports_to_block = "20, 21, 23, 69, 135, 411, 412, 1080, 1194, 2302, 2745, 3074, 3124, 3127, 3128, 8080, 3306, 3724, 3784, 3785, 4333, 4444, 4664, 5004, 5005, 5500, 5554, 5800, 5900, 6112, 6500, 6699, 6881, 6882, 6883, 6884, 6885, 6886, 6887, 6888, 6889, 6890, 6891, 6892, 6893, 6894, 6895, 6896, 6897, 6898, 6999, 8767, 8866, 9898, 9988, 12035, 12036, 12345, 14567, 27015, 27374, 28960, 31337, 33434".split(", ")
-        for port in ports_to_block:
+        for port in tqdm(ports_to_block, desc="ports"):
             run('ufw deny ' + port)
         print("Done blocking non-essential ports, you should reenable needed ports!")
 
