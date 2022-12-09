@@ -282,5 +282,6 @@ if "Ubuntu" in uname.version:
         run_print("bash ./firefox-script-stig.sh")
         print("Finished running openscap scripts")
 else:
+    print(uname)
     print("Your system is not supported!")
     exit(0)
