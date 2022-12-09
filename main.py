@@ -47,7 +47,7 @@ if "Ubuntu" in uname.version:
 
         allowed_admins = allowed_admins_input.split(",")
         allowed_users = allowed_users_input.split(",")
-        all_allowed_users = allowed_users.extend(allowed_admins)
+        all_allowed_users = allowed_users + allowed_admins
 
         for user in allowed_admins:
             if not user in users:
