@@ -18,8 +18,8 @@ if "Ubuntu" in uname.version:
     lsb_release = run('lsb_release -r').split(':')[1].strip()
     if lsb_release == "22.04":
         def install_packages(packages):
-            run('apt update')
-            run('apt install ' + packages)
+            run('apt update -y')
+            run('apt install -y ' + packages)
         def start_service(service):
             run('systemctl start ' + service)
         print("Running on Ubuntu Linux 22.04")
@@ -148,8 +148,8 @@ if "Ubuntu" in uname.version:
 
     elif lsb_release == "20.04":
         def install_packages(packages):
-            run('apt update')
-            run('apt install ' + packages)
+            run('apt update -y')
+            run('apt install -y ' + packages)
         def start_service(service):
             run('systemctl start ' + service)
         print("Running on Ubuntu Linux 20.04")
