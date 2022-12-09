@@ -14,9 +14,9 @@ if "Ubuntu" in uname.version:
     if lsb_release == "22.04":
         print("Running on Ubuntu Linux 22.04")
 
-        print("\nUpdate System")
-        run('apt update -y')
-        run('apt upgrade -y')
+        # print("\nUpdate System")
+        # run('apt update -y')
+        # run('apt upgrade -y')
 
         print("\nUpdate Users")
         UID_MIN = int(run("awk '/^UID_MIN/ {print $2}' /etc/login.defs"))
