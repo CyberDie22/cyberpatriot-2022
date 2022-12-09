@@ -23,7 +23,7 @@ if "Ubuntu" in uname.version:
         UID_MAX = int(run("awk '/^UID_MAX/ {print $2}' /etc/login.defs"))
         ME = run("logname")
 
-        print(ME)
+        print(UID_MIN, UID_MAX, ME)
 
 
 else:
