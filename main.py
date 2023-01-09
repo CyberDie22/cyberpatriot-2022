@@ -140,6 +140,7 @@ if "Ubuntu" in uname.version:
         # LAST
         print("Run clamav")
         install_packages("clamav libclamunrar9")
+        run_print("freshclam")
         run_print("clamscan --recursive /")
         run_print("clamscan --memory")
         print("Finished clamav")
