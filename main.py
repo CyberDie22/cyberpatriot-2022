@@ -136,6 +136,13 @@ if "Ubuntu" in uname.version:
         run("sed -i '/pam_deny.so/s/.*/password required pam_permit.so' /etc/pam.d/common-password")
         run("sed -i '/pam_deny.so/s/.*/password optional pam_gnome_keyring.so' /etc/pam.d/common-password")
         print("Updated password quality settings")
+        
+        print("Fix /etc/sudoers.d/ ...")
+        files = os.listdir("/etc/sudoers.d")
+        for file in files:
+            if file != "README":
+                os.remove("/etc/sudoers.d/" + file)
+        print("Fixed /etc/sudoers.d/")
 
         # LAST
         print("Run clamav")
@@ -269,6 +276,13 @@ if "Ubuntu" in uname.version:
         run("sed -i '/pam_deny.so/s/.*/password required pam_permit.so' /etc/pam.d/common-password")
         run("sed -i '/pam_deny.so/s/.*/password optional pam_gnome_keyring.so' /etc/pam.d/common-password")
         print("Updated password quality settings")
+        
+        print("Fix /etc/sudoers.d/ ...")
+        files = os.listdir("/etc/sudoers.d")
+        for file in files:
+            if file != "README":
+                os.remove("/etc/sudoers.d/" + file)
+        print("Fixed /etc/sudoers.d/")
 
         # LAST
         print("Run clamav")
