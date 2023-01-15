@@ -84,7 +84,7 @@ sudo_group = list(filter(lambda x: x.gr_name == 'sudo', groups))[0]
 
 print("Finished user audit")
 
-print("Updating passwords...")
+print("\nUpdating passwords...")
 
 # FIXME: not secure, puts password in terminal
 password = input("Set password: ")
@@ -99,17 +99,17 @@ for user in user_names:
 
 print("Finished updating passwords")
 
-print("Enabling firewall...")
-run(["ufw", "enable"])
+print("\nEnabling firewall...")
+run_with_output(["ufw", "enable"])
 print("Finished enabling fireall")
 
 
-print("Blocking non-essential ports...")
+print("\nBlocking non-essential ports...")
 ports_to_block = "20, 21, 23, 69, 135, 411, 412, 1080, 1194, 2302, 2745, 3074, 3124, 3127, 3128, 8080, 3306, 3724, 3784, 3785, 4333, 4444, 4664, 5004, 5005, 5500, 5554, 5800, 5900, 6112, 6500, 6699, 6881, 6882, 6883, 6884, 6885, 6886, 6887, 6888, 6889, 6890, 6891, 6892, 6893, 6894, 6895, 6896, 6897, 6898, 6999, 8767, 8866, 9898, 9988, 12035, 12036, 12345, 14567, 27015, 27374, 28960, 31337, 33434".split(", ")
 for port in tqdm(ports_to_block, desc="ports"):
     run('ufw deny ' + port)
 print("Done blocking non-essential ports, you should reenable needed ports!")
 
-print("Enabling unattended upgrades...")
+print("\nEnabling unattended upgrades...")
 install_packages("unattended-upgrades update-notifier-common")
 print("Finished enabling unattended upgrades...")
