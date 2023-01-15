@@ -33,5 +33,5 @@ print("\nAudit users...")
 with open("/etc/login.defs", "r") as f:
     for line in f.readlines():
         if line.startswith("UID_MIN"):
-            print(line)
+            print(line.split(" ")[-1])
 
