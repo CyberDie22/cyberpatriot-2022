@@ -72,7 +72,7 @@ for user in allowed_users:
 
 for user in users:
     if user not in allowed_accounts:
-        run("deluser", user)
+        run(["deluser", user])
         print("Deleted user '" + user + "'!")
 
 users = pwd.getpwall()
