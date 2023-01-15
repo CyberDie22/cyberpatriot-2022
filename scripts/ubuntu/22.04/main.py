@@ -35,9 +35,9 @@ UID_MAX = -1
 with open("/etc/login.defs", "r") as f:
     for line in f.readlines():
         if line.startswith("UID_MIN"):
-            UID_MIN = int(line.split(" ")[-1])
+            UID_MIN = int(line.split("\t")[-1].strip())
         if line.startswith("UID_MAX"):
-            UID_MAX = int(line.split(" ")[-1])
+            UID_MAX = int(line.split("\t")[-1].strip())
 
 ME = run_get_output("logname")
 
