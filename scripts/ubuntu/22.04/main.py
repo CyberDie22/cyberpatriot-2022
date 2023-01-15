@@ -19,7 +19,7 @@ def run(command: [str]):
 def install_packages(packages: str):
     print("Installing " + packages)
     run(["apt", "update", "-y"])
-    run(["apt", "install", "-y", packages])
+    run(["apt", "install", "-y"] + packages.split(" "))
     print("Finished installing " + packages)
 
 
