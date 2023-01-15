@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import platform, subprocess, os
+import subprocess, os, pwd
 
 
 def run_with_output(command: [str]) -> int:
@@ -39,6 +39,8 @@ with open("/etc/login.defs", "r") as f:
 
 ME = run_get_output("logname")
 
-print(UID_MIN, UID_MAX, ME)
+users = pwd.getpwall()
+users = filter(lambda x: x.pw_uid in range(UID_MIN, UID_MAX), users)
 
+print(users)
 
