@@ -11,6 +11,6 @@ def run_with_output(command: [str]) -> str:
     return subprocess.check_output(command)
 
 
-release = run_with_output(["lsb_release", "-r"]).split(" ")[-1]
+release = run_with_output(["lsb_release", "-r"])
 
 print(release)
