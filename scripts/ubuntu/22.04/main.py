@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-import subprocess, os, pwd, grp, crypt, tqdm
+import subprocess, os, pwd, grp, crypt
+from tqdm import tqdm
 
 
 def run_with_output(command: [str]) -> int:
