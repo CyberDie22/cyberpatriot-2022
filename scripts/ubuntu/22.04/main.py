@@ -56,7 +56,7 @@ allowed_accounts = allowed_admins + allowed_users
 
 for user in allowed_admins:
     if user not in user_names:
-        run(["adduser", user])
+        run(["adduser", "--disabled-login", user])
     if user not in sudo_group.gr_mem:
         run(["adduser", user, "sudo"])
 
@@ -67,7 +67,7 @@ for user in sudo_group.gr_mem:
 
 for user in allowed_users:
     if user not in user_names:
-        run(["adduser", user])
+        run(["adduser", "--disabled-login", user])
         print("Created user '" + user + "'!")
 
 for user in users:
