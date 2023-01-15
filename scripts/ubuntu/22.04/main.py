@@ -70,7 +70,7 @@ for user in allowed_users:
         run(["adduser", "--disabled-login", user])
         print("Created user '" + user + "'!")
 
-for user in users:
+for user in user_names:
     if user not in allowed_accounts:
         run(["deluser", user])
         print("Deleted user '" + user + "'!")
