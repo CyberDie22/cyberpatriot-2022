@@ -40,7 +40,7 @@ with open("/etc/login.defs", "r") as f:
 ME = run_get_output("logname")
 
 users = pwd.getpwall()
-users = filter(lambda x: x.pw_uid in range(UID_MIN, UID_MAX), users)
+users = list(filter(lambda x: x.pw_uid in range(UID_MIN, UID_MAX), users))
 
 print(users)
 
