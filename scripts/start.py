@@ -15,6 +15,8 @@ if "Ubuntu" in uname.version:
         print("You must run this as root!")
         exit(1)
 
-    run(["/bin/bash", os.getcwd() + "/ubuntu/start.sh"])
+    os.chdir(os.getcwd() + "/ubuntu")
+
+    run(["/bin/bash", "start.sh"])
 else:
     print("We don't support anything other than Ubuntu right now!")
