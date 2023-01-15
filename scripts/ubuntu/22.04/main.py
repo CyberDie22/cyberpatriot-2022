@@ -114,8 +114,9 @@ print("Done blocking non-essential ports, you should reenable needed ports!")
 print("\nEnabling unattended upgrades...")
 install_packages("unattended-upgrades update-notifier-common")
 
-with open("/etc/apt/apt.conf.d/50unattended-upgrades", "rw") as f:
+with open("/etc/apt/apt.conf.d/50unattended-upgrades", "r") as f:
     text = f.read()
+with open("/etc/apt/apt.conf.d/50unattended-upgrades", "w") as f:
     text = text.replace("//Unattended-Upgrade::Automatic-Reboot \"false\";", "Unattended-Upgrade::Automatic-Reboot \"true\";")
     text = text.replace("//Unattended-Upgrade::Automatic-Reboot-WithUsers \"true\";", "Unattended-Upgrade::Automatic-Reboot-WithUsers \"true\";")
     f.write(text)
