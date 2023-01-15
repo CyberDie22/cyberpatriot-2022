@@ -1,12 +1,16 @@
 import subprocess, platform, os
 from tqdm import tqdm
 
+
 def run(command):
     return subprocess.getoutput(command)
+
+
 def run_print(command):
     out = run(command)
     print(out)
     return out
+
 
 uname = platform.uname()
 
