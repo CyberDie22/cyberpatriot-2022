@@ -30,8 +30,17 @@ print("Running CyberPatriot 2022 Script on Ubuntu 22.04")
 # print("\nDone updating system")
 
 print("\nAudit users...")
+UID_MIN = -1
+UID_MAX = -1
 with open("/etc/login.defs", "r") as f:
     for line in f.readlines():
         if line.startswith("UID_MIN"):
-            print(line.split(" ")[-1])
+            UID_MIN = int(line.split(" ")[-1])
+        if line.startswith("UID_MAX"):
+            UID_MAX = int(line.split(" ")[-1])
+
+ME = run_get_output("logname")
+
+print(UID_MIN, UID_MAX, ME)
+
 
