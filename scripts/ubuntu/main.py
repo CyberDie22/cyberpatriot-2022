@@ -8,7 +8,7 @@ def run(command: [str]) -> int:
 
 
 def run_with_output(command: [str]) -> str:
-    return subprocess.check_output(command)
+    return subprocess.check_output(command).decode()
 
 
 release = run_with_output(["lsb_release", "-r"])
