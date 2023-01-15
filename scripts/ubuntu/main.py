@@ -13,6 +13,7 @@ def run_with_output(command: [str]) -> str:
 
 release = run_with_output(["lsb_release", "-r"]).split("\t")[-1]
 
+print("--" + release + "--")
 match release:
     case "22.04":
         os.chdir(os.getcwd() + "/22.04")
