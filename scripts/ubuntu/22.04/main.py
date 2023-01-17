@@ -121,3 +121,88 @@ with open("/etc/apt/apt.conf.d/50unattended-upgrades", "w") as f:
     text = text.replace("//Unattended-Upgrade::Automatic-Reboot-WithUsers \"true\";", "Unattended-Upgrade::Automatic-Reboot-WithUsers \"true\";")
     f.write(text)
 print("Finished enabling unattended upgrades...")
+
+print("\nDisabling ssh root login and ssh X11 forwarding...")
+with open("/etc/ssh/sshd_config", "r") as f:
+    text = f.readlines()
+with open("/etc/ssh/sshd_config", "w") as f:
+    newtext = []
+    for line in text:
+        if "PermitRootLogin" in line:
+            newtext.append("PermitRootLogin no")
+        elif "X11Forwarding" in line:
+            newtext.append("X11Forwarding no")
+        else:
+            newtext.append(line)
+    f.writelines(newtext)
+print("Disabled ssh root login and ssh X11 forwarding")
+
+print("\nUpdate password aging...")
+with open("/etc/login.defs", "r") as f:
+    text = f.readlines()
+with open("/etc/login.defs", "w") as f:
+    newtext = []
+    for line in text:
+        if "PASS_MIN_DAYS" in line:
+            newtext.append("PASS_MIN_DAYS\t1")
+        elif "PASS_MAX_DAYS" in line:
+            newtext.append("PASS_MAX_DAYS\t30")
+        elif "PASS_WARN_DAYS" in line:
+            newtext.append("PASS_WARN_DAYS\t7")
+        else:
+            newtext.append(line)
+    f.writelines(newtext)
+print("Updated password aging")
+
+print("\nUpdating password quality settings")
+install_packages("libpam-pwquality")
+with open("/etc/pam.d/common-password", "r") as f:
+    text = f.readlines()
+with open("/etc/pam.d/common-password", "w") as f:
+    newtext = []
+    for line in text:
+        if "pam_pwquality.so" in line:
+            newtext.append("password requisite pam_pwquality.so retry=3 minlen=10 dcredit=-2 ucredit=-2 lcredit=-2 ocredit=-2")
+        elif "pam_unix.so" in line:
+            newtext.append("password [success=1 default=ignore] pam_unix.so obscure use_authtok try_first_pass sha512 remember=5")
+        elif "pam_deny.so" in line:
+            newtext.append("password requisite pam_deny.so")
+        elif "pam_permit.so" in line:
+            newtext.append("password required pam_permit.so")
+        elif "pam_gnome_keyring.so" in line:
+            newtext.append("password optional pam_gnome_keyring,so")
+        else:
+            newtext.append(line)
+    f.writelines(text)
+print("Updated password quality settings")
+
+print("\nUpdating password aging settings for users")
+for user in user_names:
+    run(["chage", "--mindays", "1", "--maxdays", "30", "--warndays", "7", user])
+print("Updated password aging settings for users")
+
+print("\nFix /etc/sudoers.d/ ...")
+files = os.listdir("/etc/sudoers.d")
+for file in files:
+    if file != "README":
+        os.remove("/etc/sudoers.d/" + file)
+print("Fixed /etc/sudoers.d/")
+
+print("\nCheck installed packages...")
+with open("packages.txt", "r") as f:
+    default_packages = f.readlines()
+packages = run_get_output(["apt", "list", "--installed"]).split("\n")
+print(packages)
+print(default_packages)
+
+print("\nRun clamav")
+install_packages("clamav libclamunrar9")
+run_with_output(["freshclam"])
+run_with_output(["clamscan", "--infected", "--recursive", "/"])
+run_with_output(["clamscan", "--memory"])
+print("Finished running clamav (remove the infected files manually)")
+
+print("\nRun openscap script")
+run_with_output(["bash", "ubuntu2204-script-cis_level2_workstation.sh"])
+run_with_output(["bash", "firefox-script-stig.sh"])
+print("Finished running openscap script")
