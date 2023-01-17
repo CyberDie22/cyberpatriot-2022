@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import platform
 import subprocess, os, pwd, grp, crypt
 from tqdm import tqdm
 
@@ -196,10 +196,13 @@ print(packages)
 print(default_packages)
 
 print("\nRun clamav")
-install_packages("clamav libclamunrar9")
-run_with_output(["freshclam"])
-run_with_output(["clamscan", "--infected", "--recursive", "/"])
-run_with_output(["clamscan", "--memory"])
+print(platform.uname())
+# FIXME: this only runs on x86-64
+# run(["apt", "install", "./clamav-1.0.0.linux.x86_64.deb", "-y"])
+# run(["rm", "-rf", "/var/log/clamav/freshclam.log"])
+# run_with_output(["freshclam"])
+# run_with_output(["clamscan", "--infected", "--recursive", "/"])
+# run_with_output(["clamscan", "--memory"])
 print("Finished running clamav (remove the infected files manually)")
 
 print("\nRun openscap script")
