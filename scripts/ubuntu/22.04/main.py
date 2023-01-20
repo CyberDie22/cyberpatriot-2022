@@ -1,7 +1,17 @@
 #!/usr/bin/python3
+
+# Copyright (c) 2023, Ben Buzard
+#
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 import platform
-import subprocess, os, pwd, grp, crypt
+import subprocess, os, pwd, grp, crypt, apt
 from tqdm import tqdm
+
+
+cache = apt.Cache()
+cache.update()
+cache.open(None)
 
 
 def run_with_output(command: [str]) -> int:
@@ -18,17 +28,31 @@ def run(command: [str]):
 
 def install_packages(packages: str):
     print("Installing " + packages)
-    run(["apt", "update", "-y"])
-    run(["apt", "install", "-y"] + packages.split(" "))
+    cache.update()
+    cache.open(None)
+    for package in packages.split(" "):
+        cache[package].mark_install()
+    cache.commit()
+    cache.open(None)
     print("Finished installing " + packages)
+
+
+def remove_package(package: str):
+    print("Removing " + package)
+    cache[package].mark_delete(True, True)
+    cache.commit()
+    cache.open(None)
 
 
 print("Running CyberPatriot 2022 Script on Ubuntu 22.04")
 
-# print("\nUpdating system...")
-# run(["apt", "update", "-y"])
-# run(["apt", "upgrade", "-y"])
-# print("\nDone updating system")
+print("\nUpdating system...")
+cache.update()
+cache.open(None)
+cache.upgrade()
+cache.commit()
+cache.open(None)
+print("\nDone updating system")
 
 print("\nAudit users...")
 with open("/etc/login.defs", "r") as f:
@@ -41,11 +65,11 @@ with open("/etc/login.defs", "r") as f:
 ME = run_get_output("logname")
 
 users = pwd.getpwall()
-users = list(filter(lambda x: x.pw_uid in range(UID_MIN, UID_MAX), users))
-user_names = list(map(lambda x: x.pw_name, users))
+users = [x for x in users if x.pw_uid in range(UID_MIN, UID_MAX)]
+user_names = [x.pw_name for x in users]
 
 groups = grp.getgrall()
-sudo_group = list(filter(lambda x: x.gr_name == 'sudo', groups))[0]
+sudo_group = [x for x in groups if x.gr_name == 'sudo'][0]
 
 if sudo_group is None:
     print("ERROR: group 'sudo' does not exist!")
@@ -57,7 +81,7 @@ allowed_accounts = allowed_admins + allowed_users
 
 for user in allowed_admins:
     if user not in user_names:
-        run(["adduser", "--disabled-login", user])
+        run_with_output(["adduser", "--disabled-login", user])
     if user not in sudo_group.gr_mem:
         run(["adduser", user, "sudo"])
 
@@ -68,7 +92,7 @@ for user in sudo_group.gr_mem:
 
 for user in allowed_users:
     if user not in user_names:
-        run(["adduser", "--disabled-login", user])
+        run_with_output(["adduser", "--disabled-login", user])
         print("Created user '" + user + "'!")
 
 for user in user_names:
@@ -77,11 +101,11 @@ for user in user_names:
         print("Deleted user '" + user + "'!")
 
 users = pwd.getpwall()
-users = list(filter(lambda x: x.pw_uid in range(UID_MIN, UID_MAX), users))
-user_names = list(map(lambda x: x.pw_name, users))
+users = [x for x in users if x.pw_uid in range(UID_MIN, UID_MAX)]
+user_names = [x.pw_name for x in users]
 
 groups = grp.getgrall()
-sudo_group = list(filter(lambda x: x.gr_name == 'sudo', groups))[0]
+sudo_group = [x for x in groups if x.gr_name == 'sudo'][0]
 
 print("Finished user audit")
 
@@ -144,11 +168,11 @@ with open("/etc/login.defs", "w") as f:
     newtext = []
     for line in text:
         if "PASS_MIN_DAYS" in line:
-            newtext.append("PASS_MIN_DAYS\t1")
+            newtext.append("PASS_MIN_DAYS\t1\n")
         elif "PASS_MAX_DAYS" in line:
-            newtext.append("PASS_MAX_DAYS\t30")
+            newtext.append("PASS_MAX_DAYS\t30\n")
         elif "PASS_WARN_DAYS" in line:
-            newtext.append("PASS_WARN_DAYS\t7")
+            newtext.append("PASS_WARN_DAYS\t7\n")
         else:
             newtext.append(line)
     f.writelines(newtext)
@@ -162,15 +186,15 @@ with open("/etc/pam.d/common-password", "w") as f:
     newtext = []
     for line in text:
         if "pam_pwquality.so" in line:
-            newtext.append("password requisite pam_pwquality.so retry=3 minlen=10 dcredit=-2 ucredit=-2 lcredit=-2 ocredit=-2")
+            newtext.append("password requisite pam_pwquality.so retry=3 minlen=10 dcredit=-2 ucredit=-2 lcredit=-2 ocredit=-2\n")
         elif "pam_unix.so" in line:
-            newtext.append("password [success=1 default=ignore] pam_unix.so obscure use_authtok try_first_pass sha512 remember=5")
+            newtext.append("password [success=1 default=ignore] pam_unix.so obscure use_authtok try_first_pass sha512 remember=5\n")
         elif "pam_deny.so" in line:
-            newtext.append("password requisite pam_deny.so")
+            newtext.append("password requisite pam_deny.so\n")
         elif "pam_permit.so" in line:
-            newtext.append("password required pam_permit.so")
+            newtext.append("password required pam_permit.so\n")
         elif "pam_gnome_keyring.so" in line:
-            newtext.append("password optional pam_gnome_keyring,so")
+            newtext.append("password optional pam_gnome_keyring,so\n")
         else:
             newtext.append(line)
     f.writelines(text)
@@ -190,19 +214,35 @@ print("Fixed /etc/sudoers.d/")
 
 print("\nCheck installed packages...")
 with open("packages.txt", "r") as f:
-    default_packages = f.readlines()
-packages = run_get_output(["apt", "list", "--installed"]).split("\n")
-print(packages)
-print(default_packages)
+    default_packages = [x.strip() for x in f.readlines() if x.strip() != ""]
+packages = cache.keys()
+packages = [x for x in packages if cache[x].is_installed]
+
+non_default_packages = [x for x in packages if x not in default_packages]
+non_default_packages = [x for x in non_default_packages if not cache[x].essential]
+
+for (idx, package) in enumerate(non_default_packages):
+    print(chr(27) + "[H" + chr(27) + "[J")
+    print("Package (" + str(idx) + "/" + str(len(non_default_packages)) + "): " + package)
+    print("Description: " + cache[package].versions[0].description)
+    okay = True if input("Is this package okay (Y/N)? ") == "Y" else False
+    if not okay:
+        sure = True if input("Are you sure (Y/N)? ") == "Y" else False
+        if sure:
+            remove_package(package)
+print("Finished checking installed packages")
 
 print("\nRun clamav")
-print(platform.uname())
 # FIXME: this only runs on x86-64
-# run(["apt", "install", "./clamav-1.0.0.linux.x86_64.deb", "-y"])
-# run(["rm", "-rf", "/var/log/clamav/freshclam.log"])
-# run_with_output(["freshclam"])
-# run_with_output(["clamscan", "--infected", "--recursive", "/"])
-# run_with_output(["clamscan", "--memory"])
+match platform.uname().machine:
+    case "x86_64":
+        run(["apt", "install", "./clamav-1.0.0.linux.x86_64.deb", "-y"])
+        run(["rm", "-rf", "/var/log/clamav/freshclam.log"])
+        run_with_output(["freshclam"])
+        run_with_output(["clamscan", "--infected", "--recursive", "/"])
+        run_with_output(["clamscan", "--memory"])
+    case _:
+        print("We don't support running clamav on " + platform.uname().machine + " at this time!")
 print("Finished running clamav (remove the infected files manually)")
 
 print("\nRun openscap script")
